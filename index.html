@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mog Royal MVP</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="site-header">
+        <div class="brand">
+          <img class="brand-logo" src="assets/mog-royal-logo.png" alt="Mog Royal logo" />
+          <div>
+            <h1 class="brand-wordmark"><span>Mog</span> <span>Royal</span></h1>
+            <p>Live battle arena</p>
+          </div>
+        </div>
+
+      </header>
+
+      <main>
+        <div class="topbar">
+          <div>
+            <p class="eyebrow">MVP Build 02</p>
+            <h2 id="viewTitle">Home</h2>
+          </div>
+          <div class="top-status">
+            <div class="online-pill"><span id="onlineCount">1</span> online</div>
+            <div class="status-pill" id="connectionStatus">Ready</div>
+            <section class="profile-chip header-profile">
+              <div class="avatar" id="profileInitials">GU</div>
+              <div>
+                <strong id="profileName">Guest</strong>
+                <span id="profileRank">Casual only</span>
+              </div>
+            </section>
+            <button class="auth-button" id="authOpenButton">Log In / Sign Up</button>
+          </div>
+        </div>
+
+        <nav class="nav top-tabs" aria-label="Primary">
+          <button class="nav-item active" data-view="home">Home</button>
+          <button class="nav-item" data-view="arena">Arena</button>
+          <button class="nav-item" data-view="modes">Modes</button>
+          <button class="nav-item" data-view="leaderboard">Leaderboard</button>
+          <button class="nav-item" data-view="profile">Profile</button>
+          <button class="nav-item" data-view="safety">Safety</button>
+        </nav>
+
+        <section class="view active" id="homeView">
+          <div class="home-shell">
+            <section class="launch-panel">
+              <div class="launch-copy">
+                <div class="mode-badge">Live 1v1 Arena</div>
+                <img class="hero-logo" src="assets/mog-royal-logo.png" alt="Mog Royal" />
+                <p>Quick camera check, fast queue, ranked face-off.</p>
+              </div>
+              <div class="launch-actions">
+                <button class="primary mega-button" id="homeStartButton">Start Camera Check</button>
+                <button id="homeLeaderboardButton">View Rankings</button>
+              </div>
+            </section>
+
+            <section class="step-lane" aria-label="Battle flow">
+              <article>
+                <span>1</span>
+                <strong>Camera Check</strong>
+                <p>Enable camera and mic before joining.</p>
+              </article>
+              <article>
+                <span>2</span>
+                <strong>Pick Mode</strong>
+                <p>Classic, Casual, Speed, or Drip Check.</p>
+              </article>
+              <article>
+                <span>3</span>
+                <strong>Compete</strong>
+                <p>Vote, win points, and climb.</p>
+              </article>
+            </section>
+
+            <section class="notice-strip">
+              <strong>Restricted 18+</strong>
+              <span>Live video requires consent, moderation, and no sharing without permission.</span>
+            </section>
+
+            <section class="home-stats" aria-label="Personal stats">
+              <div>
+                <span>Rank</span>
+                <strong id="homeRankValue">Guest</strong>
+              </div>
+              <div>
+                <span>MMR</span>
+                <strong id="homeMmrValue">0</strong>
+              </div>
+              <div>
+                <span>XP</span>
+                <strong id="homeXpValue">0</strong>
+              </div>
+              <div>
+                <span>Wins</span>
+                <strong id="homeWinsValue">0</strong>
+              </div>
+              <div>
+                <span>Streak</span>
+                <strong id="homeStreakValue">0</strong>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="arenaView">
+          <div class="arena-layout">
+            <section class="battle-stage">
+              <div class="battle-header">
+                <div>
+                  <span class="label">Selected Mode</span>
+                  <strong id="selectedModeLabel">Classic Ranked</strong>
+                </div>
+                <div class="timer" id="timer">00:10</div>
+              </div>
+
+              <div class="video-grid">
+                <div class="video-panel local">
+                  <video id="localVideo" autoplay muted playsinline></video>
+                  <div class="video-empty" id="cameraPlaceholder">
+                    <strong>Camera preview</strong>
+                    <span>Enable camera to enter the queue.</span>
+                  </div>
+                  <div class="video-name">You</div>
+                </div>
+                <div class="video-panel opponent">
+                  <video id="remoteVideo" autoplay playsinline></video>
+                  <div class="opponent-face" id="opponentFace">AK</div>
+                  <div class="scan-lines" aria-hidden="true"></div>
+                  <div class="video-name" id="opponentName">Opponent pending</div>
+                </div>
+              </div>
+
+              <div class="battle-actions">
+                <button class="primary control-button" id="cameraButton">
+                  <span class="control-icon camera-icon" aria-hidden="true"></span>
+                  <span><strong>Camera</strong><small>Enable preview</small></span>
+                </button>
+                <button class="control-button" id="queueButton" disabled>
+                  <span class="control-icon queue-icon" aria-hidden="true"></span>
+                  <span><strong>Queue</strong><small>Find match</small></span>
+                </button>
+                <button class="control-button danger" id="cancelQueueButton" disabled>
+                  <span class="control-icon cancel-icon" aria-hidden="true"></span>
+                  <span><strong>Cancel</strong><small>Leave queue</small></span>
+                </button>
+                <button class="control-button" id="rematchButton" disabled>
+                  <span class="control-icon rematch-icon" aria-hidden="true"></span>
+                  <span><strong>Rematch</strong><small>Run it back</small></span>
+                </button>
+              </div>
+
+              <div class="media-controls" aria-label="Media controls">
+                <button class="mini-control" id="toggleCameraButton" disabled>
+                  <span class="mini-icon camera-icon" aria-hidden="true"></span>
+                  Camera On
+                </button>
+                <button class="mini-control" id="toggleMicButton" disabled>
+                  <span class="mini-icon mic-icon" aria-hidden="true"></span>
+                  Mic On
+                </button>
+                <button class="mini-control danger" id="leaveBattleButton" disabled>
+                  <span class="mini-icon exit-icon" aria-hidden="true"></span>
+                  Leave Battle
+                </button>
+              </div>
+            </section>
+
+            <aside class="match-panel">
+              <div class="panel-card">
+                <div class="panel-title">
+                  <span class="label">Session</span>
+                  <strong id="queueState">Not queued</strong>
+                </div>
+                <div class="progress-track"><div id="queueProgress"></div></div>
+                <div class="readiness">
+                  <div class="check-row ready" id="cameraCheck"><span></span> Camera not enabled</div>
+                  <div class="check-row" id="socketCheck"><span></span> Signaling offline</div>
+                  <div class="check-row" id="peerCheck"><span></span> Peer not connected</div>
+                </div>
+              </div>
+
+              <div class="panel-card vote-block">
+                <div class="panel-title">
+                  <span class="label">Vote</span>
+                  <p id="voteSummary">Votes unlock after a match starts.</p>
+                </div>
+                <div class="vote-buttons">
+                  <button id="voteYou" disabled>You</button>
+                  <button id="voteOpponent" disabled>Opponent</button>
+                </div>
+              </div>
+
+              <div class="panel-card chat-block">
+                <div class="panel-title">
+                  <span class="label">Live Chat</span>
+                  <strong>Room</strong>
+                </div>
+                <div class="chat-log" id="chatLog"></div>
+                <div class="reaction-row">
+                  <button data-reaction="Crown">Crown</button>
+                  <button data-reaction="Clean">Clean</button>
+                  <button data-reaction="GG">GG</button>
+                </div>
+                <form class="chat-form" id="chatForm">
+                  <input id="chatInput" maxlength="90" placeholder="Message opponent" />
+                  <button type="submit">Send</button>
+                </form>
+              </div>
+
+              <div class="panel-card stat-grid">
+                <div>
+                  <span>MMR</span>
+                  <strong id="mmrValue">1240</strong>
+                </div>
+                <div>
+                  <span>XP</span>
+                  <strong id="xpValue">780</strong>
+                </div>
+                <div>
+                  <span>Streak</span>
+                  <strong id="streakValue">3</strong>
+                </div>
+                <div>
+                  <span>Wins</span>
+                  <strong id="winsValue">18</strong>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="view" id="modesView">
+          <div class="section-head">
+            <p class="eyebrow">Mode Engine</p>
+            <h3>Battle formats that reuse the same queue, timer, voting, and results loop.</h3>
+          </div>
+          <div class="mode-grid" id="modeGrid"></div>
+          <div class="mode-tools">
+            <section class="mode-tool-card">
+              <p class="eyebrow">Private Games</p>
+              <h3>Custom Match</h3>
+              <div class="custom-grid">
+                <label>
+                  <span>Room Code</span>
+                  <input id="customRoomInput" maxlength="8" placeholder="ROYAL1" />
+                </label>
+                <label>
+                  <span>Round Time (seconds)</span>
+                  <input id="customTimerInput" type="number" min="5" max="60" value="10" />
+                </label>
+                <label>
+                  <span>Votes To Win</span>
+                  <input id="customVotesInput" type="number" min="1" max="10" value="1" />
+                </label>
+              </div>
+              <div class="tool-actions">
+                <button class="primary" id="generateRoomButton">Generate Code</button>
+                <button data-mode="custom">Use Custom Match</button>
+              </div>
+            </section>
+
+            <section class="mode-tool-card">
+              <p class="eyebrow">Practice</p>
+              <h3>Solo AI Scan</h3>
+              <p class="tool-copy">Run a respectful demo scan for structure harmony, grooming/style, and confidence/expression. Scores are subjective entertainment ratings, not statements of human value.</p>
+              <button class="primary" id="soloScanButton">Start Solo Scan</button>
+              <div id="soloScanResult"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="leaderboardView">
+          <div class="section-head">
+            <p class="eyebrow">Season One</p>
+            <h3>Global rankings</h3>
+          </div>
+          <div class="leaderboard" id="leaderboard"></div>
+        </section>
+
+        <section class="view" id="profileView">
+          <div class="profile-editor">
+            <div>
+              <p class="eyebrow">Public Profile</p>
+              <h3>Identity, placements, and battle history</h3>
+            </div>
+            <label>
+              Username
+              <input id="usernameInput" value="RoyalYou" maxlength="18" />
+            </label>
+            <label>
+              Bio
+              <textarea id="bioInput" maxlength="120">New challenger. Casual first, ranked when ready.</textarea>
+            </label>
+            <button class="primary" id="saveProfileButton">Save Profile</button>
+          </div>
+          <div class="history-list" id="historyList"></div>
+        </section>
+
+        <section class="view" id="safetyView">
+          <div class="safety-grid">
+            <section>
+              <p class="eyebrow">Moderation</p>
+              <h3>Safety controls for the first playable MVP</h3>
+              <div class="safety-actions">
+                <button id="reportButton">Report Opponent</button>
+                <button id="blockButton">Block Opponent</button>
+                <button id="guidelinesButton">Show Guidelines</button>
+              </div>
+            </section>
+            <section class="admin-panel">
+              <div class="admin-row">
+                <span>Open reports</span>
+                <strong id="reportCount">2</strong>
+              </div>
+              <div class="admin-row">
+                <span>Auto-flagged sessions</span>
+                <strong>0</strong>
+              </div>
+              <div class="admin-row">
+                <span>Banned users</span>
+                <strong>14</strong>
+              </div>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="resultDialog">
+      <div class="dialog-content result-card">
+        <p class="eyebrow">Battle Complete</p>
+        <div class="result-burst" id="resultBurst">Victory</div>
+        <h3 id="resultTitle">Victory</h3>
+        <p id="resultBody">MMR and XP updated.</p>
+        <div class="result-scoreboard">
+          <div>
+            <span>You</span>
+            <strong id="resultYouScore">0</strong>
+          </div>
+          <div>
+            <span id="resultOpponentName">Opponent</span>
+            <strong id="resultOpponentScore">0</strong>
+          </div>
+        </div>
+        <div class="ai-result-panel" id="aiResultPanel"></div>
+        <div class="dialog-actions">
+          <button class="primary" id="nextMatchButton">Next Match</button>
+          <button id="exitQueueButton">Exit Queue</button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="ageDialog">
+      <div class="dialog-content">
+        <p class="eyebrow">Restricted 18+</p>
+        <h3>Adults Only</h3>
+        <p>Live video battles are only for users 18 and older.</p>
+        <div class="dialog-actions">
+          <button class="primary" id="confirmAgeButton">I Am 18+ - Enter</button>
+          <button id="underAgeButton">I Am Under 18</button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="authDialog">
+      <form class="dialog-content" id="authForm" method="dialog">
+        <div class="auth-head">
+          <p class="eyebrow">Account Access</p>
+          <h3 id="authTitle">Log In</h3>
+          <p id="authNote">Accounts unlock ranked modes, saved progression, and profile features.</p>
+        </div>
+        <div class="auth-tabs">
+          <button type="button" class="active" id="loginTabButton">Log In</button>
+          <button type="button" id="signupTabButton">Sign Up</button>
+        </div>
+        <div class="auth-fields">
+          <label>
+            <span>Username</span>
+            <input id="authUsernameInput" maxlength="18" autocomplete="username" required />
+          </label>
+          <label>
+            <span>Email</span>
+            <input id="authEmailInput" type="email" autocomplete="email" required />
+          </label>
+          <label>
+            <span>Password</span>
+            <input id="authPasswordInput" type="password" autocomplete="current-password" minlength="6" required />
+          </label>
+        </div>
+        <div class="dialog-actions">
+          <button class="primary" type="submit" id="authSubmitButton">Log In</button>
+          <button type="button" id="authCancelButton">Continue as Guest</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="app.js"></script>
+  </body>
+</html>

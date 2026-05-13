@@ -1,0 +1,14 @@
+{
+  "name": "mog-royal",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mog Royal live battle MVP.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
