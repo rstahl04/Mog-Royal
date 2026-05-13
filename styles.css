@@ -1399,6 +1399,25 @@ dialog::backdrop {
   gap: 10px;
 }
 
+.verification-field,
+.verification-notice {
+  display: none;
+}
+
+.verification-field.active {
+  display: grid;
+}
+
+.verification-notice:not(:empty) {
+  display: block;
+  border: 1px solid rgba(255, 220, 69, 0.45);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: rgba(255, 220, 69, 0.1);
+  color: var(--gold);
+  font-weight: 800;
+}
+
 #authDialog .dialog-actions button,
 #authDialog .auth-tabs button {
   min-height: 38px;

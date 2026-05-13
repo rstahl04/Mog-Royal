@@ -82,6 +82,7 @@ const state = {
   },
   modeStats: {},
   authMode: "login",
+  pendingVerification: null,
   user: loadUser(),
   inQueue: false,
   inBattle: false,
@@ -162,6 +163,9 @@ const elements = {
   authUsernameInput: $("#authUsernameInput"),
   authEmailInput: $("#authEmailInput"),
   authPasswordInput: $("#authPasswordInput"),
+  authCodeInput: $("#authCodeInput"),
+  verificationField: $("#verificationField"),
+  verificationNotice: $("#verificationNotice"),
   customRoomInput: $("#customRoomInput"),
   customTimerInput: $("#customTimerInput"),
   customVotesInput: $("#customVotesInput"),
@@ -896,15 +900,10 @@ function renderBattleAiRatings() {
     : buildFallbackAiRating("opponent");
 
   elements.aiResultPanel.innerHTML = `
-      <div class="ai-panel-head">
-      <span class="eyebrow">AI Mog Score</span>
-      <p>Subjective entertainment scan using landmark-inspired geometry: harmony 25%, symmetry 20%, eye area 15%, jawline 15%, midface 10%, grooming/style 10%, confidence/expression 5%.</p>
-    </div>
     <div class="ai-rating-grid">
       ${aiRatingCard("You", yourRating)}
       ${aiRatingCard(state.opponentName, opponentRating)}
     </div>
-    <small>Respectful mode: no protected-class assumptions, no age estimates, no insults, no body shaming.</small>
   `;
 }
 
@@ -1082,13 +1081,18 @@ function saveUser(user) {
 
 function openAuth(mode = "login", note) {
   state.authMode = mode;
+  state.pendingVerification = null;
   elements.authTitle.textContent = mode === "signup" ? "Sign Up" : "Log In";
   elements.authSubmitButton.textContent = mode === "signup" ? "Create Account" : "Log In";
   elements.loginTabButton.classList.toggle("active", mode === "login");
   elements.signupTabButton.classList.toggle("active", mode === "signup");
   elements.authNote.textContent =
-    note || "Accounts unlock ranked modes, persistent progression, and profile features in this MVP.";
+    note || (mode === "signup" ? "Create an account, then verify your email code." : "Log in to unlock ranked modes, saved progression, and profile features.");
   elements.authPasswordInput.autocomplete = mode === "signup" ? "new-password" : "current-password";
+  elements.verificationField.classList.remove("active");
+  elements.authCodeInput.required = false;
+  elements.authCodeInput.value = "";
+  elements.verificationNotice.textContent = "";
   if (!elements.authDialog.open) elements.authDialog.showModal();
 }
 
@@ -1096,25 +1100,66 @@ function handleAuthSubmit(event) {
   event.preventDefault();
   const username = elements.authUsernameInput.value.trim() || "RoyalYou";
   const email = elements.authEmailInput.value.trim();
+  const password = elements.authPasswordInput.value;
   const existingUser = loadUserByEmail(email);
-  const user =
-    state.authMode === "login" && existingUser
-      ? existingUser
-      : {
-          username,
-          email,
-          createdAt: Date.now(),
-          stats: getStarterStats(),
-        };
+
+  if (state.authMode === "login") {
+    if (!existingUser) {
+      elements.authNote.textContent = "No local account found for that email. Use Sign Up first.";
+      return;
+    }
+    completeAuth(existingUser, "Signed in");
+    return;
+  }
+
+  if (!state.pendingVerification) {
+    const code = generateVerificationCode();
+    state.pendingVerification = {
+      code,
+      user: {
+        username,
+        email,
+        passwordHint: password.length,
+        createdAt: Date.now(),
+        verifiedEmail: false,
+        stats: getStarterStats(),
+      },
+    };
+    elements.authTitle.textContent = "Verify Email";
+    elements.authSubmitButton.textContent = "Verify Code";
+    elements.authNote.textContent = `Enter the 6-digit code sent to ${email}.`;
+    elements.verificationField.classList.add("active");
+    elements.authCodeInput.required = true;
+    elements.authCodeInput.focus();
+    elements.verificationNotice.textContent = `Development email code: ${code}`;
+    setStatus("Verification code sent");
+    return;
+  }
+
+  if (elements.authCodeInput.value.trim() !== state.pendingVerification.code) {
+    elements.verificationNotice.textContent = "That code does not match. Check the code and try again.";
+    return;
+  }
+
+  const user = { ...state.pendingVerification.user, verifiedEmail: true };
+  completeAuth(user, "Email verified");
+}
+
+function completeAuth(user, statusText) {
   state.user = user;
   saveUser(user);
   saveUserByEmail(user);
-  $("#usernameInput").value = username;
-  $("#profileName").textContent = username;
-  $("#profileInitials").textContent = initialsFor(username);
+  $("#usernameInput").value = user.username;
+  $("#profileName").textContent = user.username;
+  $("#profileInitials").textContent = initialsFor(user.username);
   elements.authDialog.close();
+  state.pendingVerification = null;
   applyAuthState();
-  setStatus("Signed in");
+  setStatus(statusText);
+}
+
+function generateVerificationCode() {
+  return String(Math.floor(100000 + Math.random() * 900000));
 }
 
 function logout() {
